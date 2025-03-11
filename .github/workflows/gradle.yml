@@ -27,24 +27,30 @@ jobs:
       - name: Setup JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: '17'
+          java-version: "17"
           java-package: jdk+fx
-
-      - name: Build and check with Gradle
-        run: ./gradlew check
 
       - name: Perform IO redirection test (*NIX)
         if: runner.os == 'Linux'
-        working-directory:  ${{ github.workspace }}/text-ui-test
+        working-directory: ${{ github.workspace }}/.github
         run: ./runtest.sh
 
       - name: Perform IO redirection test (MacOS)
         if: always() && runner.os == 'macOS'
-        working-directory:  ${{ github.workspace }}/text-ui-test
+        working-directory: ${{ github.workspace }}/.github
         run: ./runtest.sh
 
       - name: Perform IO redirection test (Windows)
         if: always() && runner.os == 'Windows'
-        working-directory:  ${{ github.workspace }}/text-ui-test
+        working-directory: ${{ github.workspace }}/.github
         shell: cmd
-        run: runtest.bat
+        run: ./runtest.sh
+
+      - name: Build and check with Gradle
+        run: ./gradlew check coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
